@@ -7,11 +7,13 @@ HEADER=$'/**\n * Generated stub declarations for WooCommerce.\n * @see https://w
 
 FILE="woocommerce-stubs.php"
 FILE_PKGS="woocommerce-packages-stubs.php"
+FILE_INTERNALS="woocommerce-internals-only-stubs.php"
 
 set -e
 
 test -f "$FILE"
 test -f "$FILE_PKGS"
+test -f "$FILE_INTERNALS"
 test -d "source/woocommerce"
 
 # Exclude globals.
@@ -43,3 +45,15 @@ printf '\nnamespace {\n%s\n}\n' "define('WC_VERSION', '0.0.0');" >>"$FILE"
     --out="$FILE_PKGS"
 # FIXME Add modern core arguments.
 ##sed -e 's#^\s*public function feedback(\$string#&, ...$args#' -i "$FILE_PKGS"
+
+# Internals.
+"$(dirname "$0")/vendor/bin/generate-stubs" \
+    --include-inaccessible-class-nodes \
+    --force \
+    --finder=finder-internals-only.php \
+    --header="$HEADER" \
+    --functions \
+    --classes \
+    --interfaces \
+    --traits \
+    --out="$FILE_INTERNALS"
